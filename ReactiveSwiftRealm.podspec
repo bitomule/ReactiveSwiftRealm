@@ -9,7 +9,7 @@ Pod::Spec.new do |spec|
 
   spec.platform = :ios, "9.1"
   spec.requires_arc = true
-  spec.source = { git: "https://github.com/bitomule/ReactiveSwiftRealm.git", tag: "{spec.version}", submodules: true }
+  spec.source = { git: "https://github.com/bitomule/ReactiveSwiftRealm.git", tag: "#{spec.version}", submodules: true }
   spec.source_files = "ReactiveSwiftRealm/**/*.{h,swift}"
 
   spec.dependency "RealmSwift", "~> 2.2.0"
