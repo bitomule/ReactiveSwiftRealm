@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		414422351E2FC18F0074FE18 /* ReactiveSwiftRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414422341E2FC18F0074FE18 /* ReactiveSwiftRealm.swift */; };
 		4169D2A11E2F6BB600A88D4C /* ReactiveSwiftRealm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4169D2971E2F6BB600A88D4C /* ReactiveSwiftRealm.framework */; };
 		4169D2A61E2F6BB600A88D4C /* ReactiveSwiftRealmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169D2A51E2F6BB600A88D4C /* ReactiveSwiftRealmTests.swift */; };
 		4169D2A81E2F6BB600A88D4C /* ReactiveSwiftRealm.h in Headers */ = {isa = PBXBuildFile; fileRef = 4169D29A1E2F6BB600A88D4C /* ReactiveSwiftRealm.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -14,6 +15,10 @@
 		4169D2B71E2F755600A88D4C /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4169D2B31E2F755600A88D4C /* Realm.framework */; };
 		4169D2B81E2F755600A88D4C /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4169D2B41E2F755600A88D4C /* RealmSwift.framework */; };
 		4169D2B91E2F755600A88D4C /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4169D2B51E2F755600A88D4C /* Result.framework */; };
+		4195A05F1E2FDD0700DFAA67 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4195A05B1E2FDD0700DFAA67 /* ReactiveSwift.framework */; };
+		4195A0601E2FDD0700DFAA67 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4195A05C1E2FDD0700DFAA67 /* Realm.framework */; };
+		4195A0611E2FDD0700DFAA67 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4195A05D1E2FDD0700DFAA67 /* RealmSwift.framework */; };
+		4195A0621E2FDD0700DFAA67 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4195A05E1E2FDD0700DFAA67 /* Result.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		414422341E2FC18F0074FE18 /* ReactiveSwiftRealm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactiveSwiftRealm.swift; sourceTree = "<group>"; };
 		4169D2971E2F6BB600A88D4C /* ReactiveSwiftRealm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ReactiveSwiftRealm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4169D29A1E2F6BB600A88D4C /* ReactiveSwiftRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReactiveSwiftRealm.h; sourceTree = "<group>"; };
 		4169D29B1E2F6BB600A88D4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -37,6 +43,10 @@
 		4169D2B31E2F755600A88D4C /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "Carthage/Checkouts/realm-cocoa/build/Debug/Realm.framework"; sourceTree = "<group>"; };
 		4169D2B41E2F755600A88D4C /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = "Carthage/Checkouts/realm-cocoa/build/Debug/RealmSwift.framework"; sourceTree = "<group>"; };
 		4169D2B51E2F755600A88D4C /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = "Carthage/Checkouts/Result/build/Debug-iphoneos/Result.framework"; sourceTree = "<group>"; };
+		4195A05B1E2FDD0700DFAA67 /* ReactiveSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveSwift.framework; path = "../../Library/Developer/Xcode/DerivedData/ReactiveSwiftRealm-czdkolnwuzdolbeiyvzcovkqekgt/Build/Products/Debug-iphonesimulator/ReactiveSwift.framework"; sourceTree = "<group>"; };
+		4195A05C1E2FDD0700DFAA67 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "../../Library/Developer/Xcode/DerivedData/ReactiveSwiftRealm-czdkolnwuzdolbeiyvzcovkqekgt/Build/Products/Debug-iphonesimulator/Realm.framework"; sourceTree = "<group>"; };
+		4195A05D1E2FDD0700DFAA67 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = "../../Library/Developer/Xcode/DerivedData/ReactiveSwiftRealm-czdkolnwuzdolbeiyvzcovkqekgt/Build/Products/Debug-iphonesimulator/RealmSwift.framework"; sourceTree = "<group>"; };
+		4195A05E1E2FDD0700DFAA67 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = "../../Library/Developer/Xcode/DerivedData/ReactiveSwiftRealm-czdkolnwuzdolbeiyvzcovkqekgt/Build/Products/Debug-iphonesimulator/Result.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +65,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4195A05F1E2FDD0700DFAA67 /* ReactiveSwift.framework in Frameworks */,
+				4195A0601E2FDD0700DFAA67 /* Realm.framework in Frameworks */,
+				4195A0611E2FDD0700DFAA67 /* RealmSwift.framework in Frameworks */,
+				4195A0621E2FDD0700DFAA67 /* Result.framework in Frameworks */,
 				4169D2A11E2F6BB600A88D4C /* ReactiveSwiftRealm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,6 +100,7 @@
 			children = (
 				4169D29A1E2F6BB600A88D4C /* ReactiveSwiftRealm.h */,
 				4169D29B1E2F6BB600A88D4C /* Info.plist */,
+				414422341E2FC18F0074FE18 /* ReactiveSwiftRealm.swift */,
 			);
 			path = ReactiveSwiftRealm;
 			sourceTree = "<group>";
@@ -102,6 +117,10 @@
 		4169D2B11E2F755500A88D4C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4195A05B1E2FDD0700DFAA67 /* ReactiveSwift.framework */,
+				4195A05C1E2FDD0700DFAA67 /* Realm.framework */,
+				4195A05D1E2FDD0700DFAA67 /* RealmSwift.framework */,
+				4195A05E1E2FDD0700DFAA67 /* Result.framework */,
 				4169D2B21E2F755600A88D4C /* ReactiveSwift.framework */,
 				4169D2B31E2F755600A88D4C /* Realm.framework */,
 				4169D2B41E2F755600A88D4C /* RealmSwift.framework */,
@@ -173,6 +192,7 @@
 					4169D2961E2F6BB600A88D4C = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = V6F673BP6X;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					4169D29F1E2F6BB600A88D4C = {
@@ -222,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				414422351E2FC18F0074FE18 /* ReactiveSwiftRealm.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +367,7 @@
 		4169D2AC1E2F6BB600A88D4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = V6F673BP6X;
@@ -364,6 +386,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bitomule.ReactiveSwiftRealm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -371,6 +394,7 @@
 		4169D2AD1E2F6BB600A88D4C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = V6F673BP6X;
@@ -396,6 +420,7 @@
 		4169D2AF1E2F6BB600A88D4C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = V6F673BP6X;
 				INFOPLIST_FILE = ReactiveSwiftRealmTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -408,6 +433,7 @@
 		4169D2B01E2F6BB600A88D4C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = V6F673BP6X;
 				INFOPLIST_FILE = ReactiveSwiftRealmTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
