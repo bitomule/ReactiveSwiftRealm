@@ -1,6 +1,6 @@
 language: objective-c
 osx_image: xcode8.2
 script:
-  - xcodebuild -scheme ReactiveSwiftRealm -workspace ReactiveSwiftRealm.xcworkspace -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=10.2' build test
+  - xcodebuild -scheme ReactiveSwiftRealm -workspace ReactiveSwiftRealm.xcworkspace -sdk iphonesimulator10.2 -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' build test
 after_success:
   - bash <(curl -s https://codecov.io/bash)
