@@ -1,7 +1,6 @@
 language: objective-c
 osx_image: xcode8
 script:
-
   - xcodebuild -scheme ReactiveSwiftRealm -workspace ReactiveSwiftRealm.xcworkspace -sdk iphonesimulator -destination 'name=iPhone 6' build test
 
 after_success:
