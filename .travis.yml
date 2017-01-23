@@ -1,11 +1,6 @@
 language: objective-c
 osx_image: xcode8
-before_install: true
-install: true
-git:
-  submodules: false
-before_script:
-  - git submodule update --init --recursive
 script:
-- carthage bootstrap --platform ios --configuration Release --no-use-binaries
+- gem install cocoapods
+- pod install
 - xcodebuild test -project ReactiveSwiftRealm.xcodeproj -scheme ReactiveSwiftRealm -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0' | xcpretty -c
