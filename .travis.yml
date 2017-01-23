@@ -1,6 +1,70 @@
 language: objective-c
-osx_image: xcode8
+osx_image: xcode8.2
+before_install: true
+install: true
+git:
+  submodules: false
+before_script:
+  - git submodule update --init --recursive
 script:
-- gem install cocoapods
-- pod install
-- xcodebuild test -project ReactiveSwiftRealm.xcodeproj -scheme ReactiveSwiftRealm -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.0' | xcpretty -c
+  - script/build
+xcode_workspace: ReactiveSwiftRealmRealm.xcworkspace
+matrix:
+  include:
+    - xcode_scheme: ReactiveSwiftRealm-macOS
+      env:
+        - XCODE_SDK=macosx
+        - XCODE_ACTION="build test"
+        - XCODE_DESTINATION="arch=x86_64"
+        - XCODE_PLAYGROUND_TARGET="x86_64-apple-macosx10.10"
+    - xcode_scheme: ReactiveSwiftRealm-iOS
+      env:
+        - XCODE_SDK=iphonesimulator
+        - XCODE_ACTION="build-for-testing test-without-building"
+        - XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 6s,OS=10.1"
+    - xcode_scheme: ReactiveSwiftRealm-iOS
+      env:
+        - XCODE_SDK=iphonesimulator
+        - XCODE_ACTION="build-for-testing test-without-building"
+        - XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5,OS=10.1"
+    - xcode_scheme: ReactiveSwiftRealm-tvOS
+      env:
+        - XCODE_SDK=appletvsimulator
+        - XCODE_ACTION="build-for-testing test-without-building"
+        - XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p"
+    - xcode_scheme: ReactiveSwiftRealm-watchOS
+      env:
+        - XCODE_SDK=watchsimulator
+        - XCODE_ACTION=build
+        - XCODE_DESTINATION="platform=watchOS Simulator,name=Apple Watch - 38mm"
+    - script:
+        - brew update
+        - brew outdated carthage || brew upgrade carthage
+        - carthage build --no-skip-current --platform mac
+      env:
+        - JOB=CARTHAGE-macOS
+    - script:
+        - brew update
+        - brew outdated carthage || brew upgrade carthage
+        - carthage build --no-skip-current --platform iOS
+      env:
+        - JOB=CARTHAGE-iOS
+    - script:
+        - brew update
+        - brew outdated carthage || brew upgrade carthage
+        - carthage build --no-skip-current --platform tvOS
+      env:
+        - JOB=CARTHAGE-tvOS
+    - script:
+        - brew update
+        - brew outdated carthage || brew upgrade carthage
+        - carthage build --no-skip-current --platform watchOS
+      env:
+        - JOB=CARTHAGE-watchOS
+    - script:
+      - pod repo update --silent
+      - pod lib lint ReactiveSwiftRealm.podspec
+      env:
+        - JOB=PODSPEC
+    
+    
