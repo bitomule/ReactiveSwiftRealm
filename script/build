@@ -29,7 +29,7 @@ if [[ -z $XCODE_DESTINATION ]]; then
 fi
 
 set -o pipefail
-travis_retry xcodebuild $XCODE_ACTION \
+xcodebuild $XCODE_ACTION \
     -workspace "$TRAVIS_XCODE_WORKSPACE" \
     -scheme "$TRAVIS_XCODE_SCHEME" \
     -sdk "$XCODE_SDK" \
