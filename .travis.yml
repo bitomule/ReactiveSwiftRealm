@@ -24,7 +24,7 @@ matrix:
     - script:
         - brew update
         - brew outdated carthage || brew upgrade carthage
-        - travis_wait carthage build --no-skip-current --platform iOS
+        - travis_wait 40 carthage build --no-skip-current --platform iOS
       env:
         - JOB=CARTHAGE-iOS
     - script:
