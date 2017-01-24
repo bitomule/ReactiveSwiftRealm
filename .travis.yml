@@ -27,5 +27,7 @@ matrix:
       - pod lib lint ReactiveSwiftRealm.podspec
       env:
         - JOB=PODSPEC
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
     
     
