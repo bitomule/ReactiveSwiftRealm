@@ -192,6 +192,117 @@ class ReactiveSwiftRealmTests: XCTestCase {
         }
     }
     
+    func testAddSavesArray(){
+        let objects = [FakeObject(),FakeObject()]
+        objects.add().start()
+        let savedObjects = realm.objects(FakeObject.self)
+        XCTAssertEqual(savedObjects.count, 2)
+    }
+    
+    func testAddSavesArrayInBackground(){
+        let expectation = self.expectation(description: "ready")
+        let objects = [FakeObject(),FakeObject()]
+        objects.add(realm: nil, thread: .background).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 2)
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testUpdateUpdatesArray(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject1 = FakeObject()
+        let fakeObject2 = FakeObject()
+        let fakeObjects = [fakeObject1,fakeObject2]
+        fakeObject1.value = "oldValue"
+        fakeObject2.value = "oldValue"
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        
+        fakeObjects.update(type: FakeObject.self) { object in
+            object.value = "updatedValue"
+            }.on(value: {
+                let objects = self.realm.objects(FakeObject.self)
+                XCTAssertEqual(objects.first?.value, "updatedValue")
+                XCTAssertEqual(objects.last?.value, "updatedValue")
+                XCTAssertEqual(objects.count, 2)
+                expectation.fulfill()
+            }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testUpdateUpdatesArrayInBackground(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject1 = FakeObject()
+        let fakeObject2 = FakeObject()
+        let fakeObjects = [fakeObject1,fakeObject2]
+        fakeObject1.value = "oldValue"
+        fakeObject2.value = "oldValue"
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        
+        fakeObjects.update(type: FakeObject.self, realm: realm, thread: .background) { object in
+            object.value = "updatedValue"
+        }.on(value: {
+                let objects = self.realm.objects(FakeObject.self)
+                XCTAssertEqual(objects.first?.value, "updatedValue")
+                XCTAssertEqual(objects.last?.value, "updatedValue")
+                XCTAssertEqual(objects.count, 2)
+                expectation.fulfill()
+            }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testDeleteRemovesArray(){
+        let fakeObjects = [FakeObject(),FakeObject()]
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        let objects = realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        fakeObjects.delete().start()
+        let emptyObjects = realm.objects(FakeObject.self)
+        XCTAssertEqual(emptyObjects.count, 0)
+    }
+    
+    func testDeleteRemovesArrayInBackground(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObjects = [FakeObject(),FakeObject()]
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        let objects = realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        fakeObjects.delete(realm: nil, thread: .background).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 0)
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    
 }
 
 class FakeObject: Object{
