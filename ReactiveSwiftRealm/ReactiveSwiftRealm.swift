@@ -13,6 +13,7 @@ import RealmSwift
 enum ReactiveSwiftRealmError:Error{
     case wrongThread
     case deletedInAnotherThread
+    case alreadyExists
 }
 
 enum ReactiveSwiftRealmThread:Error{
@@ -23,9 +24,17 @@ enum ReactiveSwiftRealmThread:Error{
 // Realm save closure
 public typealias UpdateClosure<T> = (_ object:T) -> ()
 
+private func objectAlreadyExists<T:Object>(realm:Realm,object:T)->Bool{
+    if let primaryKey = type(of: object).primaryKey(),
+        let _ = realm.object(ofType: type(of: object), forPrimaryKey: object.value(forKey: primaryKey)) {
+        return true
+    }
+    return false
+}
+
 extension Object{
     
-    func add(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+    func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -35,8 +44,12 @@ extension Object{
                 }else{
                     threadRealm = try! Realm()
                 }
+                if !update && objectAlreadyExists(realm: threadRealm, object: self){
+                    observer.send(error: .alreadyExists)
+                    return
+                }
                 threadRealm.beginWrite()
-                threadRealm.add(self)
+                threadRealm.add(self, update: update)
                 try! threadRealm.commitWrite()
                 observer.send(value: ())
                 observer.sendCompleted()
@@ -45,8 +58,12 @@ extension Object{
                     let object = self
                     DispatchQueue(label: "background").async {
                         let threadRealm = try! Realm()
+                        if !update && objectAlreadyExists(realm: threadRealm, object: object){
+                            observer.send(error: .alreadyExists)
+                            return
+                        }
                         threadRealm.beginWrite()
-                        threadRealm.add(object)
+                        threadRealm.add(object, update: update)
                         try! threadRealm.commitWrite()
                         
                         DispatchQueue.main.async {
@@ -62,8 +79,12 @@ extension Object{
                             observer.send(error: .deletedInAnotherThread)
                             return
                         }
+                        if !update && objectAlreadyExists(realm: threadRealm, object: object){
+                            observer.send(error: .alreadyExists)
+                            return
+                        }
                         threadRealm.beginWrite()
-                        threadRealm.add(object)
+                        threadRealm.add(object, update: update)
                         try! threadRealm.commitWrite()
                         
                         DispatchQueue.main.async {
@@ -172,7 +193,7 @@ extension Object{
 }
 
 extension Array where Element:Object{
-    func add(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+    func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -183,37 +204,16 @@ extension Array where Element:Object{
                     threadRealm = try! Realm()
                 }
                 threadRealm.beginWrite()
-                threadRealm.add(self)
+                threadRealm.add(self, update: update)
                 try! threadRealm.commitWrite()
                 observer.send(value: ())
                 observer.sendCompleted()
             case.background:
-                /*
-                let safeReferences = self.filter{$0.realm != nil}.map({ object in
-                    return ThreadSafeReference(to: object)
-                })
-                DispatchQueue(label: "background").async {
-                    let threadRealm = try! Realm()
-                    let safeObjects = safeReferences.flatMap({ safeObject in
-                        return threadRealm.resolve(safeObject)
-                    })
-                    //if safeObjects.count
-                    
-                    threadRealm.beginWrite()
-                    threadRealm.add(safeObjects)
-                    try! threadRealm.commitWrite()
-                    
-                    DispatchQueue.main.async {
-                        observer.send(value: ())
-                        observer.sendCompleted()
-                    }
-                }*/
-                
                 let notStoredReferences = self.filter{$0.realm == nil}
                 DispatchQueue(label: "background").async {
                     let threadRealm = try! Realm()
                     threadRealm.beginWrite()
-                    threadRealm.add(notStoredReferences)
+                    threadRealm.add(notStoredReferences, update: update)
                     try! threadRealm.commitWrite()
                     
                     DispatchQueue.main.async {

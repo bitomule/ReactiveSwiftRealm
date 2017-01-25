@@ -65,6 +65,88 @@ class ReactiveSwiftRealmTests: XCTestCase {
         }
     }
     
+    func testAddUpdatesIfObjectWithIdAlreadyExists(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject = FakeObject()
+        let fakeId = fakeObject.id
+        fakeObject.value = "oldValue"
+        try! realm.write {
+            realm.add(fakeObject)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 1)
+        
+        let anotherFakeObject = FakeObject()
+        anotherFakeObject.id = fakeId
+        anotherFakeObject.value = "updatedValue"
+        
+        anotherFakeObject.add(realm:realm,update:true).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 1)
+            XCTAssertEqual(objects.first?.value, "updatedValue")
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testAddUpdatesIfObjectWithIdAlreadyExistsInBackground(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject = FakeObject()
+        let fakeId = fakeObject.id
+        fakeObject.value = "oldValue"
+        try! realm.write {
+            realm.add(fakeObject)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 1)
+        
+        let anotherFakeObject = FakeObject()
+        anotherFakeObject.id = fakeId
+        anotherFakeObject.value = "updatedValue"
+        
+        anotherFakeObject.add(realm:realm,update:true,thread:.background).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 1)
+            XCTAssertEqual(objects.first?.value, "updatedValue")
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testAddSendsErrorIfObjectAlreadyExists(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject = FakeObject()
+        let fakeId = fakeObject.id
+        fakeObject.value = "oldValue"
+        try! realm.write {
+            realm.add(fakeObject)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 1)
+        
+        let anotherFakeObject = FakeObject()
+        anotherFakeObject.id = fakeId
+        anotherFakeObject.value = "updatedValue"
+        
+        anotherFakeObject.add().on(failed: { error in
+            XCTAssertEqual(error, ReactiveSwiftRealmError.alreadyExists)
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
     func testUpdateChangesObject(){
         let expectation = self.expectation(description: "ready")
         let fakeObject = FakeObject()
@@ -213,6 +295,84 @@ class ReactiveSwiftRealmTests: XCTestCase {
         }
     }
     
+    func testAddUpdatesIfArrayWithIdAlreadyExists(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject1 = FakeObject()
+        let fakeObject2 = FakeObject()
+        let fakeId1 = fakeObject1.id
+        let fakeId2 = fakeObject2.id
+        fakeObject1.value = "oldValue"
+        fakeObject2.value = "oldValue"
+        let fakeObjects = [fakeObject1,fakeObject2]
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        
+        let anotherFakeObject1 = FakeObject()
+        anotherFakeObject1.id = fakeId1
+        anotherFakeObject1.value = "updatedValue"
+        
+        let anotherFakeObject2 = FakeObject()
+        anotherFakeObject2.id = fakeId2
+        anotherFakeObject2.value = "updatedValue"
+        
+        let anotherFakeObjects = [anotherFakeObject1,anotherFakeObject2]
+        
+        anotherFakeObjects.add(realm:realm,update:true).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 2)
+            XCTAssertEqual(objects.first?.value, "updatedValue")
+            XCTAssertEqual(objects.last?.value, "updatedValue")
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
+    func testAddUpdatesIfArrayWithIdAlreadyExistsInBackground(){
+        let expectation = self.expectation(description: "ready")
+        let fakeObject1 = FakeObject()
+        let fakeObject2 = FakeObject()
+        let fakeId1 = fakeObject1.id
+        let fakeId2 = fakeObject2.id
+        fakeObject1.value = "oldValue"
+        fakeObject2.value = "oldValue"
+        let fakeObjects = [fakeObject1,fakeObject2]
+        try! realm.write {
+            realm.add(fakeObjects)
+        }
+        
+        let objects = self.realm.objects(FakeObject.self)
+        XCTAssertEqual(objects.count, 2)
+        
+        let anotherFakeObject1 = FakeObject()
+        anotherFakeObject1.id = fakeId1
+        anotherFakeObject1.value = "updatedValue"
+        
+        let anotherFakeObject2 = FakeObject()
+        anotherFakeObject2.id = fakeId2
+        anotherFakeObject2.value = "updatedValue"
+        
+        let anotherFakeObjects = [anotherFakeObject1,anotherFakeObject2]
+        
+        anotherFakeObjects.add(realm:realm,update:true,thread:.background).on(value: {
+            let objects = self.realm.objects(FakeObject.self)
+            XCTAssertEqual(objects.count, 2)
+            XCTAssertEqual(objects.first?.value, "updatedValue")
+            XCTAssertEqual(objects.last?.value, "updatedValue")
+            expectation.fulfill()
+        }).start()
+        
+        waitForExpectations(timeout: 0.1){ error in
+            
+        }
+    }
+    
     func testUpdateUpdatesArray(){
         let expectation = self.expectation(description: "ready")
         let fakeObject1 = FakeObject()
@@ -306,6 +466,10 @@ class ReactiveSwiftRealmTests: XCTestCase {
 }
 
 class FakeObject: Object{
-    dynamic var id = ""
+    dynamic var id = NSUUID().uuidString.lowercased()
     dynamic var value = ""
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
 }
