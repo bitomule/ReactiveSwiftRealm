@@ -24,12 +24,38 @@ enum ReactiveSwiftRealmThread:Error{
 // Realm save closure
 public typealias UpdateClosure<T> = (_ object:T) -> ()
 
+// - MARK: Helpers
+
 private func objectAlreadyExists<T:Object>(realm:Realm,object:T)->Bool{
     if let primaryKey = type(of: object).primaryKey(),
         let _ = realm.object(ofType: type(of: object), forPrimaryKey: object.value(forKey: primaryKey)) {
         return true
     }
     return false
+}
+
+private func addOperation(realm:Realm,object:Object,update:Bool){
+    realm.beginWrite()
+    realm.add(object, update: update)
+    try! realm.commitWrite()
+}
+
+private func addOperation(realm:Realm,objects:[Object],update:Bool){
+    realm.beginWrite()
+    realm.add(objects, update: update)
+    try! realm.commitWrite()
+}
+
+private func deleteOperation(realm:Realm,object:Object){
+    realm.beginWrite()
+    realm.delete(object)
+    try! realm.commitWrite()
+}
+
+private func deleteOperation(realm:Realm,objects:[Object]){
+    realm.beginWrite()
+    realm.delete(objects)
+    try! realm.commitWrite()
 }
 
 extension ReactiveRealmOperable where Self:Object{
@@ -43,9 +69,7 @@ extension ReactiveRealmOperable where Self:Object{
                     observer.send(error: .alreadyExists)
                     return
                 }
-                threadRealm.beginWrite()
-                threadRealm.add(self, update: update)
-                try! threadRealm.commitWrite()
+                addOperation(realm:threadRealm,object:self,update:update)
                 observer.send(value: ())
                 observer.sendCompleted()
             case.background:
@@ -57,9 +81,8 @@ extension ReactiveRealmOperable where Self:Object{
                             observer.send(error: .alreadyExists)
                             return
                         }
-                        threadRealm.beginWrite()
-                        threadRealm.add(object, update: update)
-                        try! threadRealm.commitWrite()
+                        
+                        addOperation(realm:threadRealm,object:object,update:update)
                         
                         DispatchQueue.main.async {
                             observer.send(value: ())
@@ -78,9 +101,8 @@ extension ReactiveRealmOperable where Self:Object{
                             observer.send(error: .alreadyExists)
                             return
                         }
-                        threadRealm.beginWrite()
-                        threadRealm.add(object, update: update)
-                        try! threadRealm.commitWrite()
+                        
+                        addOperation(realm:threadRealm,object:object,update:update)
                         
                         DispatchQueue.main.async {
                             observer.send(value: ())
@@ -134,9 +156,7 @@ extension ReactiveRealmOperable where Self:Object{
             switch thread{
             case .main:
                 let threadRealm = try! realm ?? Realm()
-                threadRealm.beginWrite()
-                threadRealm.delete(self)
-                try! threadRealm.commitWrite()
+                deleteOperation(realm: threadRealm, object: self)
                 observer.send(value: ())
                 observer.sendCompleted()
             case.background:
@@ -144,9 +164,7 @@ extension ReactiveRealmOperable where Self:Object{
                     let object = self
                     DispatchQueue(label: "background").async {
                         let threadRealm = try! Realm()
-                        threadRealm.beginWrite()
-                        threadRealm.delete(object)
-                        try! threadRealm.commitWrite()
+                        deleteOperation(realm: threadRealm, object: object)
                         
                         DispatchQueue.main.async {
                             observer.send(value: ())
@@ -161,9 +179,7 @@ extension ReactiveRealmOperable where Self:Object{
                             observer.send(error: .deletedInAnotherThread)
                             return
                         }
-                        threadRealm.beginWrite()
-                        threadRealm.delete(object)
-                        try! threadRealm.commitWrite()
+                        deleteOperation(realm: threadRealm, object: object)
                         
                         DispatchQueue.main.async {
                             observer.send(value: ())
@@ -185,18 +201,14 @@ extension Array where Element:Object{
             switch thread{
             case .main:
                 let threadRealm = try! realm ?? Realm()
-                threadRealm.beginWrite()
-                threadRealm.add(self, update: update)
-                try! threadRealm.commitWrite()
+                addOperation(realm: threadRealm, objects: self, update: update)
                 observer.send(value: ())
                 observer.sendCompleted()
             case.background:
                 let notStoredReferences = self.filter{$0.realm == nil}
                 DispatchQueue(label: "background").async {
                     let threadRealm = try! Realm()
-                    threadRealm.beginWrite()
-                    threadRealm.add(notStoredReferences, update: update)
-                    try! threadRealm.commitWrite()
+                    addOperation(realm: threadRealm, objects: notStoredReferences, update: update)
                     
                     DispatchQueue.main.async {
                         observer.send(value: ())
@@ -222,7 +234,6 @@ extension Array where Element:Object{
                 for object in self{
                     operation(object)
                 }
-                
                 try! threadRealm.commitWrite()
                 observer.send(value: ())
                 observer.sendCompleted()
@@ -258,9 +269,7 @@ extension Array where Element:Object{
             switch thread{
             case .main:
                 let threadRealm = try! realm ?? Realm()
-                threadRealm.beginWrite()
-                threadRealm.delete(self)
-                try! threadRealm.commitWrite()
+                deleteOperation(realm: threadRealm, objects: self)
                 observer.send(value: ())
                 observer.sendCompleted()
             case.background:
@@ -274,9 +283,8 @@ extension Array where Element:Object{
                         observer.send(error: .deletedInAnotherThread)
                         return
                     }
-                    threadRealm.beginWrite()
-                    threadRealm.delete(safeObjects)
-                    try! threadRealm.commitWrite()
+                    
+                    deleteOperation(realm: threadRealm, objects: safeObjects)
                     
                     DispatchQueue.main.async {
                         observer.send(value: ())
@@ -313,8 +321,16 @@ extension ReactiveRealmQueryable where Self:Object{
 }
 
 extension SignalProducerProtocol where Value: NotificationEmitter, Error == ReactiveSwiftRealmError {
-    func reactive() -> SignalProducer<(value:Self.Value,changes:RealmChangeset?), ReactiveSwiftRealmError> {
-        return producer.flatMap(.latest) {results -> SignalProducer<(value:Self.Value,changes:RealmChangeset?), ReactiveSwiftRealmError> in
+    
+    /**
+     Transform Results<T> into a reactive source
+     :returns: signal containing updated values and optional RealmChangeset when changed
+     */
+    
+    typealias RealmReactiveResults = (value:Self.Value,changes:RealmChangeset?)
+    
+    func reactive() -> SignalProducer<RealmReactiveResults, ReactiveSwiftRealmError> {
+        return producer.flatMap(.latest) {results -> SignalProducer<RealmReactiveResults, ReactiveSwiftRealmError> in
             return SignalProducer { observer,disposable in
                 let notificationToken = results.addNotificationBlock { (changes: RealmCollectionChange) in
                     switch changes {
