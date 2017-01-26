@@ -10,7 +10,7 @@ import XCTest
 import ReactiveSwift
 import Result
 import RealmSwift
-@testable import ReactiveSwiftRealm
+import ReactiveSwiftRealm
 
 class ReactiveSwiftRealmTests: XCTestCase {
     

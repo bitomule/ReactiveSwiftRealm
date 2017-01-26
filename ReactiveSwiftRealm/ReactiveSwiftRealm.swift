@@ -10,13 +10,13 @@ import ReactiveSwift
 import Result
 import RealmSwift
 
-enum ReactiveSwiftRealmError:Error{
+public enum ReactiveSwiftRealmError:Error{
     case wrongThread
     case deletedInAnotherThread
     case alreadyExists
 }
 
-enum ReactiveSwiftRealmThread:Error{
+public enum ReactiveSwiftRealmThread:Error{
     case main
     case background
 }
@@ -58,9 +58,9 @@ private func deleteOperation(realm:Realm,objects:[Object]){
     try! realm.commitWrite()
 }
 
-extension ReactiveRealmOperable where Self:Object{
+public extension ReactiveRealmOperable where Self:Object{
     
-    func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+    public func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -115,7 +115,7 @@ extension ReactiveRealmOperable where Self:Object{
         }
     }
     
-    func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Self>)->SignalProducer<(),ReactiveSwiftRealmError>{
+    public func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Self>)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread{
                 observer.send(error: .wrongThread)
@@ -151,7 +151,7 @@ extension ReactiveRealmOperable where Self:Object{
         }
     }
     
-    func delete(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+    public func delete(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -195,8 +195,8 @@ extension ReactiveRealmOperable where Self:Object{
 }
 
 
-extension Array where Element:Object{
-    func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+public extension Array where Element:Object{
+    public func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -221,7 +221,7 @@ extension Array where Element:Object{
         }
     }
     
-    func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Array.Element>)->SignalProducer<(),ReactiveSwiftRealmError>{
+    public func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Array.Element>)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread{
                 observer.send(error: .wrongThread)
@@ -264,7 +264,7 @@ extension Array where Element:Object{
         }
     }
     
-    func delete(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
+    public func delete(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
@@ -297,8 +297,8 @@ extension Array where Element:Object{
     }
 }
 
-extension ReactiveRealmQueryable where Self:Object{
-    static func findBy(key:Any,realm:Realm = try! Realm()) -> SignalProducer<Self?,ReactiveSwiftRealmError>{
+public extension ReactiveRealmQueryable where Self:Object{
+    public static func findBy(key:Any,realm:Realm = try! Realm()) -> SignalProducer<Self?,ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread {
                 observer.send(error: .wrongThread)
@@ -309,7 +309,7 @@ extension ReactiveRealmQueryable where Self:Object{
         
     }
     
-    static func findBy(query:String,realm:Realm = try! Realm()) -> SignalProducer<Results<Self>,ReactiveSwiftRealmError>{
+    public static func findBy(query:String,realm:Realm = try! Realm()) -> SignalProducer<Results<Self>,ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread {
                 observer.send(error: .wrongThread)
@@ -320,16 +320,16 @@ extension ReactiveRealmQueryable where Self:Object{
     }
 }
 
-extension SignalProducerProtocol where Value: NotificationEmitter, Error == ReactiveSwiftRealmError {
+public extension SignalProducerProtocol where Value: NotificationEmitter, Error == ReactiveSwiftRealmError {
     
     /**
      Transform Results<T> into a reactive source
      :returns: signal containing updated values and optional RealmChangeset when changed
      */
     
-    typealias RealmReactiveResults = (value:Self.Value,changes:RealmChangeset?)
+    public typealias RealmReactiveResults = (value:Self.Value,changes:RealmChangeset?)
     
-    func reactive() -> SignalProducer<RealmReactiveResults, ReactiveSwiftRealmError> {
+    public  func reactive() -> SignalProducer<RealmReactiveResults, ReactiveSwiftRealmError> {
         return producer.flatMap(.latest) {results -> SignalProducer<RealmReactiveResults, ReactiveSwiftRealmError> in
             return SignalProducer { observer,disposable in
                 let notificationToken = results.addNotificationBlock { (changes: RealmCollectionChange) in
@@ -355,14 +355,14 @@ extension SignalProducerProtocol where Value: NotificationEmitter, Error == Reac
     }
 }
 
-extension SignalProducerProtocol where Value:SortableRealmResults, Error == ReactiveSwiftRealmError{
+public  extension SignalProducerProtocol where Value:SortableRealmResults, Error == ReactiveSwiftRealmError{
     /**
      Sorts the signal producer of Results<T> using a key an the ascending value
      :param: key key the results will be sorted by
      :param: ascending true if the results sort order is ascending
      :returns: sorted SignalProducer
      */
-    func sorted(key: String, ascending: Bool = true) -> SignalProducer<Self.Value, ReactiveSwiftRealmError> {
+    public  func sorted(key: String, ascending: Bool = true) -> SignalProducer<Self.Value, ReactiveSwiftRealmError> {
         return producer.flatMap(.latest) { results in
             return SignalProducer(value:results.sorted(byProperty: key, ascending: ascending) as Self.Value) as SignalProducer<Self.Value, ReactiveSwiftRealmError>
         }
@@ -373,13 +373,10 @@ extension SignalProducerProtocol where Value:SortableRealmResults, Error == Reac
 // - MARK: Protocol helpers
 
 extension Object:ReactiveRealmQueryable{}
-
-protocol ReactiveRealmQueryable{}
-
+public  protocol ReactiveRealmQueryable{}
 
 extension Object:ReactiveRealmOperable{}
-
-protocol ReactiveRealmOperable:ThreadConfined{}
+public  protocol ReactiveRealmOperable:ThreadConfined{}
 
 
 /**
@@ -401,7 +398,7 @@ public protocol NotificationEmitter {
 }
 
 
-extension Results:NotificationEmitter{}
+ extension Results:NotificationEmitter{}
 
 /**
  `RealmChangeset` is a struct that contains the data about a single realm change set.
