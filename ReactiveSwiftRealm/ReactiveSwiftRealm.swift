@@ -38,12 +38,7 @@ extension ReactiveRealmOperable where Self:Object{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 if !update && objectAlreadyExists(realm: threadRealm, object: self){
                     observer.send(error: .alreadyExists)
                     return
@@ -106,12 +101,7 @@ extension ReactiveRealmOperable where Self:Object{
             }
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 threadRealm.beginWrite()
                 operation(self)
                 try! threadRealm.commitWrite()
@@ -143,12 +133,7 @@ extension ReactiveRealmOperable where Self:Object{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 threadRealm.beginWrite()
                 threadRealm.delete(self)
                 try! threadRealm.commitWrite()
@@ -199,12 +184,7 @@ extension Array where Element:Object{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 threadRealm.beginWrite()
                 threadRealm.add(self, update: update)
                 try! threadRealm.commitWrite()
@@ -237,12 +217,7 @@ extension Array where Element:Object{
             }
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 threadRealm.beginWrite()
                 for object in self{
                     operation(object)
@@ -282,12 +257,7 @@ extension Array where Element:Object{
         return SignalProducer{ observer,_ in
             switch thread{
             case .main:
-                let threadRealm:Realm
-                if let realm = realm{
-                    threadRealm = realm
-                }else{
-                    threadRealm = try! Realm()
-                }
+                let threadRealm = try! realm ?? Realm()
                 threadRealm.beginWrite()
                 threadRealm.delete(self)
                 try! threadRealm.commitWrite()
