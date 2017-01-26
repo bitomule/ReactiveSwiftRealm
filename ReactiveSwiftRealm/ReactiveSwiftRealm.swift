@@ -32,7 +32,7 @@ private func objectAlreadyExists<T:Object>(realm:Realm,object:T)->Bool{
     return false
 }
 
-extension Object{
+extension ReactiveRealmOperable where Self:Object{
     
     func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
@@ -98,7 +98,7 @@ extension Object{
         }
     }
     
-    func update<T:Object>(type:T.Type,realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<T>)->SignalProducer<(),ReactiveSwiftRealmError>{
+    func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Self>)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread{
                 observer.send(error: .wrongThread)
@@ -113,7 +113,7 @@ extension Object{
                     threadRealm = try! Realm()
                 }
                 threadRealm.beginWrite()
-                operation(self as! T)
+                operation(self)
                 try! threadRealm.commitWrite()
                 observer.send(value: ())
                 observer.sendCompleted()
@@ -127,7 +127,7 @@ extension Object{
                         return
                     }
                     threadRealm.beginWrite()
-                    operation(object as! T)
+                    operation(object)
                     try! threadRealm.commitWrite()
                     DispatchQueue.main.async {
                         observer.send(value: ())
@@ -190,7 +190,9 @@ extension Object{
             
         }
     }
+ 
 }
+
 
 extension Array where Element:Object{
     func add(realm:Realm? = nil,update:Bool = false,thread:ReactiveSwiftRealmThread = .main)->SignalProducer<(),ReactiveSwiftRealmError>{
@@ -227,7 +229,7 @@ extension Array where Element:Object{
         }
     }
     
-    func update<T:Object>(type:T.Type,realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<T>)->SignalProducer<(),ReactiveSwiftRealmError>{
+    func update(realm:Realm? = nil,thread:ReactiveSwiftRealmThread = .main,operation:@escaping UpdateClosure<Array.Element>)->SignalProducer<(),ReactiveSwiftRealmError>{
         return SignalProducer{ observer,_ in
             if !Thread.isMainThread{
                 observer.send(error: .wrongThread)
@@ -243,7 +245,7 @@ extension Array where Element:Object{
                 }
                 threadRealm.beginWrite()
                 for object in self{
-                    operation(object as! T)
+                    operation(object)
                 }
                 
                 try! threadRealm.commitWrite()
@@ -262,7 +264,7 @@ extension Array where Element:Object{
                     }
                     threadRealm.beginWrite()
                     for object in safeObjects{
-                        operation(object as! T)
+                        operation(object)
                     }
                     try! threadRealm.commitWrite()
                     
@@ -316,10 +318,6 @@ extension Array where Element:Object{
         }
     }
 }
-
-extension Object:ReactiveRealmQueryable{}
-
-protocol ReactiveRealmQueryable{}
 
 extension ReactiveRealmQueryable where Self:Object{
     static func findBy(key:Any,realm:Realm = try! Realm()) -> SignalProducer<Self?,ReactiveSwiftRealmError>{
@@ -387,6 +385,16 @@ extension SignalProducerProtocol where Value:SortableRealmResults, Error == Reac
 
 
 // - MARK: Protocol helpers
+
+extension Object:ReactiveRealmQueryable{}
+
+protocol ReactiveRealmQueryable{}
+
+
+extension Object:ReactiveRealmOperable{}
+
+protocol ReactiveRealmOperable:ThreadConfined{}
+
 
 /**
  `NotificationEmitter` is a faux protocol to allow for Realm's collections to be handled in a generic way.

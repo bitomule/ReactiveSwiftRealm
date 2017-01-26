@@ -158,7 +158,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 1)
         
-        fakeObject.update(type: FakeObject.self) { object in
+        fakeObject.update() { object in
             object.value = "updatedValue"
         }.on(value: {
             let objects = self.realm.objects(FakeObject.self)
@@ -182,7 +182,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 1)
         DispatchQueue.global(qos: .background).async {
-            fakeObject.update(type: FakeObject.self) { object in
+            fakeObject.update() { object in
                 object.value = "updatedValue"
                 }.on( failed: { error in
                     XCTAssertEqual(error, .wrongThread)
@@ -205,7 +205,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 1)
-        fakeObject.update(type: FakeObject.self, realm: nil, thread: .background) { object in
+        fakeObject.update(thread: .background) { object in
             XCTAssertFalse(Thread.isMainThread)
             object.value = "updatedValue"
         }.on(value: {
@@ -230,7 +230,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 1)
-        fakeObject.update(type: FakeObject.self, realm: nil, thread: .background) { object in
+        fakeObject.update(thread: .background) { object in
             object.value = "updatedValue"
             }.on(value: {
                 XCTAssertTrue(Thread.isMainThread)
@@ -387,7 +387,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 2)
         
-        fakeObjects.update(type: FakeObject.self) { object in
+        fakeObjects.update() { object in
             object.value = "updatedValue"
             }.on(value: {
                 let objects = self.realm.objects(FakeObject.self)
@@ -416,7 +416,7 @@ class ReactiveSwiftRealmTests: XCTestCase {
         let objects = self.realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 2)
         
-        fakeObjects.update(type: FakeObject.self, realm: realm, thread: .background) { object in
+        fakeObjects.update( thread: .background) { object in
             object.value = "updatedValue"
         }.on(value: {
                 let objects = self.realm.objects(FakeObject.self)
