@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = "ReactiveSwiftRealm"
-  spec.version = "0.0.1"
+  spec.version = "1.0.0"
   spec.summary = "Add reactive swift functionality to Realm"
   spec.homepage = "https://github.com/bitomule/ReactiveSwiftRealm"
   spec.license = { type: 'MIT', file: 'LICENSE' }
