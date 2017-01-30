@@ -620,7 +620,11 @@ class ReactiveSwiftRealmTests: XCTestCase {
         let objects = realm.objects(FakeObject.self)
         XCTAssertEqual(objects.count, 1)
         
+        var firstValueSended = false
+        
         FakeObject.findBy(query: "id == \"objectId\"").reactive().on(value: { results in
+            guard !firstValueSended else {return}
+            firstValueSended = true
             XCTAssertEqual(results.value.count, 1)
             XCTAssertEqual(results.value.first!.value, "oldValue")
             expectation.fulfill()
