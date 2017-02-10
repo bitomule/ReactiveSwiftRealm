@@ -26,12 +26,12 @@ public typealias UpdateClosure<T> = (_ object:T) -> ()
 
 // - MARK: Helpers
 
-private func objectAlreadyExists<T:Object>(realm:Realm,object:T)->Bool{
-    if let primaryKey = type(of: object).primaryKey(),
-        let _ = realm.object(ofType: type(of: object), forPrimaryKey: object.value(forKey: primaryKey)) {
-        return true
-    }
-    return false
+private func objectAlreadyExists(realm:Realm,object:Object)->Bool{
+  if let primaryKey = type(of: object).primaryKey(),
+    let _ = realm.object(ofType: type(of: object), forPrimaryKey: object.value(forKey: primaryKey)) {
+    return true
+  }
+  return false
 }
 
 private func addOperation(realm:Realm,object:Object,update:Bool){
