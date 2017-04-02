@@ -318,6 +318,16 @@ public extension ReactiveRealmQueryable where Self:Object{
             observer.send(value: realm.objects(Self.self).filter(query))
         }
     }
+  
+  public static func findAll(realm:Realm = try! Realm()) -> SignalProducer<Results<Self>,ReactiveSwiftRealmError>{
+    return SignalProducer{ observer,_ in
+      if !Thread.isMainThread {
+        observer.send(error: .wrongThread)
+        return
+      }
+      observer.send(value: realm.objects(Self.self))
+    }
+  }
 }
 
 public extension SignalProducerProtocol where Value: NotificationEmitter, Error == ReactiveSwiftRealmError {

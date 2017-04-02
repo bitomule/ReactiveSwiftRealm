@@ -858,7 +858,29 @@ class ReactiveSwiftRealmTests: XCTestCase {
             
         }
     }
+  
+  func testFindAllSendsAllObjects(){
+    let expectation = self.expectation(description: "ready")
+    let fakeObjects = [FakeObject(),FakeObject()]
+    for fakeObject in fakeObjects{
+      fakeObject.value = "testValue"
+    }
+    try! realm.write {
+      realm.add(fakeObjects)
+    }
+    let objects = realm.objects(FakeObject.self)
+    XCTAssertEqual(objects.count, 2)
     
+    FakeObject.findAll().on(value: { results in
+      XCTAssertEqual(results.count, 2)
+      expectation.fulfill()
+    }).start()
+    
+    waitForExpectations(timeout: 0.1){ error in
+      
+    }
+  }
+  
 }
 
 class FakeObject: Object{
