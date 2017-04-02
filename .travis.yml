@@ -16,6 +16,11 @@ matrix:
         - XCODE_SDK=iphonesimulator
         - XCODE_ACTION="build-for-testing test-without-building"
         - XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 6s,OS=10.1"
+      before_install:
+        - brew update
+        - brew outdated carthage || brew upgrade carthage
+      install:
+        - carthage bootstrap --platform iOS
     - xcode_scheme: ReactiveSwiftRealm
       env:
         - XCODE_SDK=iphonesimulator
