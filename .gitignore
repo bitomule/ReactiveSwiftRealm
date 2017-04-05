@@ -30,4 +30,4 @@ xcuserdata
 .build/
 
 # Carthage
-Carthage/Checkouts
+Carthage/Build
